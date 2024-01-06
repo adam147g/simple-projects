@@ -1,5 +1,7 @@
 import pygame
 from Button import Button
+from ButtonType import ButtonType
+from Sudoku_solver_backtracking import solve_for_list_of_buttons
 
 # Inicjalizacja Pygame
 pygame.init()
@@ -22,7 +24,7 @@ cell_size = window_size[0] // board_size
 
 # Oblicz współrzędne X i Y, aby wyśrodkować planszę
 board_x = (window_size[0] - (board_size * cell_size)) // 2
-board_y = (window_size[1] - (board_size * cell_size)) // 2
+board_y = (window_size[1] - (board_size * cell_size)) // 2 - 2 * cell_size
 
 # Czcionka dla wartości w komórkach
 font = pygame.font.Font(None, 36)
@@ -34,14 +36,18 @@ for i in range(board_size):
     for j in range(board_size):
         x = board_x + j * cell_size
         y = board_y + i * cell_size
-        new_button = Button((x, y), cell_size)
+        new_button = Button((x, y), (cell_size, cell_size), ButtonType.BOARD)
         board_place[i][j] = new_button
 
 starter_x = board_x
 starter_y = board_y + (board_size + 1) * cell_size
 for i in range(board_size):
-    new_button = Button((starter_x + cell_size * i, starter_y), cell_size, True, str(i))
+    new_button = Button((starter_x + cell_size * i, starter_y), (cell_size, cell_size), ButtonType.NUMBERS_TO_CHOOSE,
+                        str(i+1))
     numbers[i] = new_button
+
+solve_button = Button((starter_x, starter_y + cell_size * 2), (cell_size * board_size, cell_size), ButtonType.CONFIRM,
+                      "SOLVE")
 
 
 def draw_komorki():
@@ -51,35 +57,50 @@ def draw_komorki():
 
             # Rysuj prostokąt
             pygame.draw.rect(screen, to_draw.color,
-                             (to_draw.position[0], to_draw.position[1], to_draw.size, to_draw.size))
+                             (to_draw.position[0], to_draw.position[1], to_draw.size[0], to_draw.size[1]))
 
             # Rysuj obramowanie
-            pygame.draw.rect(screen, black, (to_draw.position[0], to_draw.position[1], to_draw.size, to_draw.size), 1)
+            pygame.draw.rect(screen, black,
+                             (to_draw.position[0], to_draw.position[1], to_draw.size[0], to_draw.size[1]), 1)
 
             confirm_text = font.render(to_draw.name, True, black)
             confirm_rect = confirm_text.get_rect(
-                center=(to_draw.position[0] + to_draw.size // 2, to_draw.position[1] + to_draw.size // 2)
+                center=(to_draw.position[0] + to_draw.size[0] // 2, to_draw.position[1] + to_draw.size[1] // 2)
             )
             screen.blit(confirm_text, confirm_rect)
     for i in range(0, board_size, int(board_size ** (1 / 2))):
         for j in range(0, board_size, int(board_size ** (1 / 2))):
             pygame.draw.rect(screen, black, (
                 board_place[i][j].position[0], board_place[i][j].position[1],
-                3 * board_place[i][j].size, 3 * board_place[i][j].size), 3)
+                3 * board_place[i][j].size[0], 3 * board_place[i][j].size[1]), 3)
 
     for i in range(board_size):
         to_draw = numbers[i]
         # Rysuj prostokąt
-        pygame.draw.rect(screen, to_draw.color, (to_draw.position[0], to_draw.position[1], to_draw.size, to_draw.size))
+        pygame.draw.rect(screen, to_draw.color,
+                         (to_draw.position[0], to_draw.position[1], to_draw.size[0], to_draw.size[1]))
 
         # Rysuj obramowanie
-        pygame.draw.rect(screen, black, (to_draw.position[0], to_draw.position[1], to_draw.size, to_draw.size), 1)
+        pygame.draw.rect(screen, black, (to_draw.position[0], to_draw.position[1], to_draw.size[0], to_draw.size[1]), 1)
 
         confirm_text = font.render(to_draw.name, True, black)
         confirm_rect = confirm_text.get_rect(
-            center=(to_draw.position[0] + to_draw.size // 2, to_draw.position[1] + to_draw.size // 2)
+            center=(to_draw.position[0] + to_draw.size[0] // 2, to_draw.position[1] + to_draw.size[1] // 2)
         )
         screen.blit(confirm_text, confirm_rect)
+
+    to_draw = solve_button
+    pygame.draw.rect(screen, to_draw.color,
+                     (to_draw.position[0], to_draw.position[1], to_draw.size[0], to_draw.size[1]))
+
+    # Rysuj obramowanie
+    pygame.draw.rect(screen, black, (to_draw.position[0], to_draw.position[1], to_draw.size[0], to_draw.size[1]), 1)
+
+    confirm_text = font.render(to_draw.name, True, black)
+    confirm_rect = confirm_text.get_rect(
+        center=(to_draw.position[0] + to_draw.size[0] // 2, to_draw.position[1] + to_draw.size[1] // 2)
+    )
+    screen.blit(confirm_text, confirm_rect)
 
 
 # Główna pętla gry
@@ -90,7 +111,6 @@ while running:
     screen.fill(white)
     draw_komorki()
     pygame.display.flip()  # Uaktualnij ekran
-
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -113,6 +133,12 @@ while running:
             elif 0 <= button_index_y < board_size and button_index_x == board_size + 1:
                 active_number = numbers[button_index_y]
                 active_number.active = True
+            elif 0 <= button_index_y < board_size and button_index_x == board_size + 3:
+                active_number = solve_button
+                active_number.active = True
+                print("halooo")
+                result = solve_for_list_of_buttons(board_place)
+                print(result)
             elif clicked_button is not None:
                 clicked_button.active = False
                 clicked_button = None

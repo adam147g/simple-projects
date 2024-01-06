@@ -1,7 +1,10 @@
 from time import perf_counter
+from Button import Button
+
+
 def find_square_for_4x4(row, col, sudoku):
-    n = len(sudoku)             # 4
-    divide = n ** (1 / 2)       # 2
+    n = len(sudoku)  # 4
+    divide = n ** (1 / 2)  # 2
     if n / divide > row > -1:
         if n / divide > col > -1:
             return 0
@@ -15,12 +18,12 @@ def find_square_for_4x4(row, col, sudoku):
 
 
 def find_square_for_9x9(row, col, sudoku):
-    n = len(sudoku)         # 9
-    divide = n ** (1 / 2)   # 3
+    n = len(sudoku)  # 9
+    divide = n ** (1 / 2)  # 3
     if n / divide > row > -1:
         if n / divide > col > -1:
             return 0
-        elif 2 * n / divide > col >= n / divide :
+        elif 2 * n / divide > col >= n / divide:
             return 1
         else:
             return 2
@@ -50,7 +53,6 @@ def find_square(row, col, sudoku):
     for i in range(n):
         if (i + 1) * n / divide > col >= divide * i:
             return int(row * divide + i)
-
 
 
 def fill_lists(sudoku, rows, cols, squares):
@@ -125,14 +127,12 @@ def sudoku_solver_backtracking(sudoku):
                         break
                 if break_:
                     break
-                new_row+=1
+                new_row += 1
         if not stop:
             rows[my_row].insert(0, x)
             cols[my_col].insert(0, x)
             squares[finded].insert(0, x)
             sudoku[my_row][my_col] = 0
-
-
 
     def solve(sudoku, rows, cols, squares, my_row, my_col):
         nonlocal stop
@@ -142,23 +142,22 @@ def sudoku_solver_backtracking(sudoku):
                 if len(rows[my_row]) <= len(cols[my_col]) and len(rows[my_row]) <= len(squares[finded]):
                     for x in rows[my_row]:
                         if x in cols[my_col] and x in squares[finded]:
-                            make_magic(rows, cols, squares, sudoku, my_row, my_col, x,finded)
+                            make_magic(rows, cols, squares, sudoku, my_row, my_col, x, finded)
                 else:
-                    if  len(cols[my_col]) <= len(squares[finded]):
+                    if len(cols[my_col]) <= len(squares[finded]):
                         for x in cols[my_col]:
                             if x in rows[my_row] and x in squares[finded]:
-                                make_magic(rows, cols, squares, sudoku, my_row, my_col, x,finded)
+                                make_magic(rows, cols, squares, sudoku, my_row, my_col, x, finded)
                     else:
                         for x in squares[finded]:
                             if x in rows[my_row] and x in cols[my_col]:
-                                make_magic(rows, cols, squares, sudoku, my_row, my_col, x,finded)
+                                make_magic(rows, cols, squares, sudoku, my_row, my_col, x, finded)
 
     fill_lists(sudoku, rows, cols, squares)
     for x in range(len(sudoku)):
         for y in range(len(sudoku)):
             if sudoku[x][y] == 0 and not stop:
                 solve(sudoku, rows, cols, squares, x, y)
-
 
 
 def if_is_solved(sudoku):
@@ -182,112 +181,135 @@ def if_is_solved(sudoku):
     return True
 
 
-'''
-N = 4
-sudoku_1 = [[4, 3, 0, 0],
-            [2, 1, 4, 3],
-            [3, 4, 0, 2],
-            [1, 2, 3, 4]]
+if __name__ == "__main__":
+    '''
+    N = 4
+    sudoku_1 = [[4, 3, 0, 0],
+                [2, 1, 4, 3],
+                [3, 4, 0, 2],
+                [1, 2, 3, 4]]
+    
+    sudoku_solver_backtracking(sudoku_1)
+    for i in range(N):
+        print(sudoku_1[i])
+    print(if_is_solved(sudoku_1))
+    print()
+    sudoku_2 = [[0, 2, 0, 1],
+                [0, 0, 0, 3],
+                [0, 0, 3, 0],
+                [4, 0, 0, 0]]
+    sudoku_solver_backtracking(sudoku_2)
+    for i in range(N):
+        print(sudoku_2[i])
+    print(if_is_solved(sudoku_2))
+    print()
+    
+    sudoku_4x4 = [[0] * 4 for _ in range(4)]
+    for row in range(4):
+        for col in range(4):
+            sudoku_4x4[row][col] = find_square_for_4x4(row,col,sudoku_4x4)
+        print(sudoku_4x4[row])
+    
+    print()
+    
+    
+    
+    sudoku_9x9 = [[0] * 9 for _ in range(9)]
+    for row in range(9):
+        for col in range(9):
+            sudoku_9x9[row][col] = find_square_for_9x9(row,col,sudoku_9x9)
+        print(sudoku_9x9[row])
+    
+    
+    print()
+    
+    sudoku_4x4_generally = [[0] * 4 for _ in range(4)]
+    for row in range(4):
+        for col in range(4):
+            sudoku_4x4_generally[row][col] = find_square(row,col,sudoku_4x4_generally)
+        print(sudoku_4x4_generally[row])
+    
+    print()
+    
+    
+    sudoku_9x9_generally = [[0] * 9 for _ in range(9)]
+    for row in range(9):
+        for col in range(9):
+            sudoku_9x9_generally[row][col] = find_square(row,col,sudoku_9x9_generally)
+        print(sudoku_9x9_generally[row])
+    '''
 
-sudoku_solver_backtracking(sudoku_1)
-for i in range(N):
-    print(sudoku_1[i])
-print(if_is_solved(sudoku_1))
-print()
-sudoku_2 = [[0, 2, 0, 1],
-            [0, 0, 0, 3],
-            [0, 0, 3, 0],
-            [4, 0, 0, 0]]
-sudoku_solver_backtracking(sudoku_2)
-for i in range(N):
-    print(sudoku_2[i])
-print(if_is_solved(sudoku_2))
-print()
+    # kluczowe=[
+    #     [0,0,8,6,0,0,0,1,0],
+    # [0,0,4,2,1,0,7,0,0],
+    # [9,2,0,0,5,7,0,0,0],
+    # [0,6,7,0,9,0,5,8,1],
+    # [2,0,5,0,0,0,6,0,3],
+    # [8,1,9,0,6,0,4,2,0],
+    # [0,0,0,9,3,0,0,7,4],
+    # [0,0,2,0,7,6,8,0,0],
+    # [0,8,0,0,0,4,1,0,0],
+    #     ]
+    kluczowe = [[0 for _ in range(9)] for _ in range(9)]
+    start = perf_counter()
+    sudoku_solver_backtracking(kluczowe)
+    for i in range(len(kluczowe)):
+        print(kluczowe[i])
+    print(if_is_solved(kluczowe))
+    print()
+    stop = perf_counter()
+    print(stop - start, "s")
 
-sudoku_4x4 = [[0] * 4 for _ in range(4)]
-for row in range(4):
-    for col in range(4):
-        sudoku_4x4[row][col] = find_square_for_4x4(row,col,sudoku_4x4)
-    print(sudoku_4x4[row])
-
-print()
-
-
-
-sudoku_9x9 = [[0] * 9 for _ in range(9)]
-for row in range(9):
-    for col in range(9):
-        sudoku_9x9[row][col] = find_square_for_9x9(row,col,sudoku_9x9)
-    print(sudoku_9x9[row])
-
-
-print()
-
-sudoku_4x4_generally = [[0] * 4 for _ in range(4)]
-for row in range(4):
-    for col in range(4):
-        sudoku_4x4_generally[row][col] = find_square(row,col,sudoku_4x4_generally)
-    print(sudoku_4x4_generally[row])
-
-print()
-
-
-sudoku_9x9_generally = [[0] * 9 for _ in range(9)]
-for row in range(9):
-    for col in range(9):
-        sudoku_9x9_generally[row][col] = find_square(row,col,sudoku_9x9_generally)
-    print(sudoku_9x9_generally[row])
-'''
-
-
-kluczowe=[
-    [0,0,8,6,0,0,0,1,0],
-[0,0,4,2,1,0,7,0,0],
-[9,2,0,0,5,7,0,0,0],
-[0,6,7,0,9,0,5,8,1],
-[2,0,5,0,0,0,6,0,3],
-[8,1,9,0,6,0,4,2,0],
-[0,0,0,9,3,0,0,7,4],
-[0,0,2,0,7,6,8,0,0],
-[0,8,0,0,0,4,1,0,0],
+    '''
+    t = [[0] * 9 for _ in range(9)]
+    sudoku_solver_backtracking(t)
+    for i in range(len(t)):
+        print(t[i])
+    print(if_is_solved(t))
+    print()
+    
+    
+    # poniższy trwa dwie i pół minuty - wpisując po kolei - nie zważając na to, czy w którymś kwadracie/kolumnie/wierszu
+    # nie brakuje np. tylko jednego - prawdopodobna możliwość optymalizacji
+    
+    trudny_przypadek_z_neta = [
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,3,0,8,5],
+        [0,0,1,0,2,0,0,0,0],
+        [0,0,0,5,0,7,0,0,0],
+        [0,0,4,0,0,0,1,0,0],
+        [0,9,0,0,0,0,0,0,0],
+        [5,0,0,0,0,0,0,7,3],
+        [0,0,2,0,1,0,0,0,0],
+        [0,0,0,0,4,0,0,0,9]
     ]
-start=perf_counter()
-sudoku_solver_backtracking(kluczowe)
-for i in range(len(kluczowe)):
-    print(kluczowe[i])
-print(if_is_solved(kluczowe))
-print()
-stop=perf_counter()
-print(stop-start,"s")
-
-'''
-t = [[0] * 9 for _ in range(9)]
-sudoku_solver_backtracking(t)
-for i in range(len(t)):
-    print(t[i])
-print(if_is_solved(t))
-print()
+    x = perf_counter()
+    sudoku_solver_backtracking(trudny_przypadek_z_neta)
+    for i in range(len(trudny_przypadek_z_neta)):
+        print(trudny_przypadek_z_neta[i])
+    print(if_is_solved(trudny_przypadek_z_neta))
+    print()
+    y = perf_counter()
+    print(y - x,"s")'''
 
 
-# poniższy trwa dwie i pół minuty - wpisując po kolei - nie zważając na to, czy w którymś kwadracie/kolumnie/wierszu
-# nie brakuje np. tylko jednego - prawdopodobna możliwość optymalizacji
+def solve_for_list_of_buttons(board):
+    size = len(board)
+    normal_list = [[] for _ in range(size)]
 
-trudny_przypadek_z_neta = [
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,3,0,8,5],
-    [0,0,1,0,2,0,0,0,0],
-    [0,0,0,5,0,7,0,0,0],
-    [0,0,4,0,0,0,1,0,0],
-    [0,9,0,0,0,0,0,0,0],
-    [5,0,0,0,0,0,0,7,3],
-    [0,0,2,0,1,0,0,0,0],
-    [0,0,0,0,4,0,0,0,9]
-]
-x = perf_counter()
-sudoku_solver_backtracking(trudny_przypadek_z_neta)
-for i in range(len(trudny_przypadek_z_neta)):
-    print(trudny_przypadek_z_neta[i])
-print(if_is_solved(trudny_przypadek_z_neta))
-print()
-y = perf_counter()
-print(y - x,"s")'''
+    for i in range(size):
+        for j in range(size):
+            if board[i][j].name == "":
+                normal_list[i].append(0)
+            else:
+                normal_list[i].append(int(board[i][j].name))
+
+    sudoku_solver_backtracking(normal_list)
+
+    if if_is_solved(normal_list):
+        for i in range(size):
+            for j in range(size):
+                if board[i][j].name == "":
+                    board[i][j].name = str(normal_list[i][j])
+        return True
+    return False
